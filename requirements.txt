@@ -1,0 +1,5 @@
+Flask
+Flask-RESTful
+osmnx
+networkx
+Flask-Cors
