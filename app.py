@@ -4,8 +4,6 @@ from flask_cors import CORS
 
 from models.main_model import MainModel
 
-
-
 app = Flask(__name__)
 
 api = Api(app)

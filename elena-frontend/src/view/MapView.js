@@ -41,7 +41,6 @@ const MapView = (path) => {
 
     useEffect(() => {
         if (JSON.stringify(path.path) !== '{}') {
-            console.log("path again", path.path)
             map.on('load', () => {
                 map.addSource('route', {
                     'type': 'geojson',

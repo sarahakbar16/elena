@@ -7,7 +7,6 @@ function App() {
   const [p, setP] = useState({})
 
   const setPath = (my_path) => {
-    console.log("MY PATH BE", my_path)
     setP(my_path)
   }
 

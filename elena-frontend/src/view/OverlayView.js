@@ -29,7 +29,6 @@ const OverlayView = ({ setMyPath }) => {
     const [algorithm, setAlgorithm] = useState("")
 
     const setThisPath = (path) => {
-        console.log("SETTING THE PATH", path)
         setMyPath(path)
     }
 
@@ -80,7 +79,6 @@ const OverlayView = ({ setMyPath }) => {
     }
 
     const onClickButton = async () => {
-        console.log("Here is all the shit")
         console.log(sourceLat, sourceLng, destLat, destLng, x, minMax, algorithm)
         let data = {
             "source_coords_lat": sourceLat,
@@ -92,7 +90,6 @@ const OverlayView = ({ setMyPath }) => {
             "algorithm": algorithm
         }
         let path = await postGetPath(JSON.stringify(data))
-        console.log("POSTING RETUNRS", path)
         setThisPath(path)
         
     }
