@@ -20,7 +20,7 @@ const MapView = (path) => {
     let map;
     const [lng, setLng] = useState(-72.526711);
     const [lat, setLat] = useState(42.391155);
-    const [zoom, setZoom] = useState(2);
+    const [zoom, setZoom] = useState(14);
 
     useEffect(() => {
         map = new mapboxgl.Map({
@@ -42,20 +42,39 @@ const MapView = (path) => {
     useEffect(() => {
         if (JSON.stringify(path.path) !== '{}') {
             map.on('load', () => {
-                map.addSource('route', {
+                map.addSource('elevation-route', {
                     'type': 'geojson',
                     'data': path.path.elevation_route, 
                 });
                 map.addLayer({
-                    'id': 'route',
+                    'id': 'elevation-route',
                     'type': 'line',
-                    'source': 'route',
+                    'source': 'elevation-route',
                     'layout': {
                         'line-join': 'round',
                         'line-cap': 'round'
                     },
                     'paint': {
                         'line-color': '#FF0000',
+                        'line-width': 15
+                    }
+                });
+
+                map.addSource('shortest-route', {
+                    'type': 'geojson',
+                    'data': path.path.shortest_route, 
+                });
+                
+                map.addLayer({
+                    'id': 'shortest-route',
+                    'type': 'line',
+                    'source': 'shortest-route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#008000',
                         'line-width': 15
                     }
                 });
