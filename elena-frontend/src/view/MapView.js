@@ -20,7 +20,7 @@ const MapView = (path) => {
     let map;
     const [lng, setLng] = useState(-72.526711);
     const [lat, setLat] = useState(42.391155);
-    const [zoom, setZoom] = useState(14);
+    const [zoom, setZoom] = useState(15);
 
     useEffect(() => {
         map = new mapboxgl.Map({
@@ -31,11 +31,11 @@ const MapView = (path) => {
         });
 
 
-        map.on('move', () => {
+        /* map.on('move', () => {
             setLng(map.getCenter().lng.toFixed(4));
             setLat(map.getCenter().lat.toFixed(4));
             setZoom(map.getZoom().toFixed(2));
-        });
+        }); */
 
     });
 
@@ -56,7 +56,7 @@ const MapView = (path) => {
                     },
                     'paint': {
                         'line-color': '#FF0000',
-                        'line-width': 15
+                        'line-width': 5
                     }
                 });
 
@@ -75,7 +75,7 @@ const MapView = (path) => {
                     },
                     'paint': {
                         'line-color': '#008000',
-                        'line-width': 15
+                        'line-width': 5
                     }
                 });
             })

@@ -28,6 +28,8 @@ const OverlayView = ({ setMyPath }) => {
     const [minMax, setMinMax] = useState("")
     const [algorithm, setAlgorithm] = useState("")
 
+    const [pathStats, setPathStats] = useState()
+
     const setThisPath = (path) => {
         setMyPath(path)
     }
@@ -90,6 +92,7 @@ const OverlayView = ({ setMyPath }) => {
             "algorithm": algorithm
         }
         let path = await postGetPath(JSON.stringify(data))
+        setPathStats(path)
         setThisPath(path)
         
     }
@@ -120,6 +123,11 @@ const OverlayView = ({ setMyPath }) => {
             <Button onClick={onClickDijkstra}>Dijkstra's Algorithm</Button>
         </ButtonGroup>
         <Button variant="contained" disabled={!validData} onClick={onClickButton}>Click</Button>
+
+        { pathStats && 
+            <div className ="stats">Shortest Route: {pathStats.shortDist}  Elevation Route: {pathStats.elenavDist}</div>
+        }
+        
     </div>
 
 

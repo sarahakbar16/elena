@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.16.0",
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
     "@mapbox/mapbox-gl-geocoder": "^4.7.4",
     "@mui/material": "^5.2.3",
     "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "mapbox-gl": "^2.6.1",
     "mapbox-gl-geocoder": "^2.0.1",
@@ -42,5 +42,8 @@
     "last 1 firefox version",
     "last 1 safari version"
   ],
-  "proxy": "http://localhost:5000/"
+  "proxy": "http://localhost:5000/",
+  "devDependencies": {
+    "@testing-library/react": "^11.2.7"
+  }
 }
