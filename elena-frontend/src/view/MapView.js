@@ -14,15 +14,16 @@ mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 const tkn = 'pk.eyJ1Ijoic2FrYmFyIiwiYSI6ImNrd3BpZ3R5dDBkNmwydnM2MGczZWczejMifQ.ogaGLHvGYHqJ8Y8ThXf8yQ';
 mapboxgl.accessToken = tkn
 
-const MapView = () => {
+const MapView = (path) => {
 
     const mapContainer = useRef(null);
+    let map;
     const [lng, setLng] = useState(-72.526711);
     const [lat, setLat] = useState(42.391155);
     const [zoom, setZoom] = useState(14);
 
     useEffect(() => {
-        const map = new mapboxgl.Map({
+        map = new mapboxgl.Map({
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/dark-v10',
             center: [lng, lat],
@@ -37,6 +38,54 @@ const MapView = () => {
         });
 
     });
+
+    useEffect(() => {
+        if (JSON.stringify(path.path) !== '{}') {
+            map.on('load', () => {
+                map.addSource('elevation-route', {
+                    'type': 'geojson',
+                    'data': path.path.elevation_route, 
+                });
+                map.addLayer({
+                    'id': 'elevation-route',
+                    'type': 'line',
+                    'source': 'elevation-route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#FF0000',
+                        'line-width': 15
+                    }
+                });
+
+                map.addSource('shortest-route', {
+                    'type': 'geojson',
+                    'data': path.path.shortest_route, 
+                });
+                
+                map.addLayer({
+                    'id': 'shortest-route',
+                    'type': 'line',
+                    'source': 'shortest-route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#008000',
+                        'line-width': 15
+                    }
+                });
+            })
+
+        }
+            
+
+    }, [path])
+
+
 
 
     return (
