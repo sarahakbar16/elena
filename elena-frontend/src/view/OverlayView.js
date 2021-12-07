@@ -12,7 +12,7 @@ import "./OverlayViewStyles.scss"
 const tkn = 'pk.eyJ1Ijoic2FrYmFyIiwiYSI6ImNrd3BpZ3R5dDBkNmwydnM2MGczZWczejMifQ.ogaGLHvGYHqJ8Y8ThXf8yQ';
 
 
-const OverlayView = () => {
+const OverlayView = ({ setMyPath }) => {
 
     const [validData, setValidData] = useState(false)
 
@@ -27,6 +27,11 @@ const OverlayView = () => {
 
     const [minMax, setMinMax] = useState("")
     const [algorithm, setAlgorithm] = useState("")
+
+    const setThisPath = (path) => {
+        console.log("SETTING THE PATH", path)
+        setMyPath(path)
+    }
 
     const onChangeSource = (result, lat, lng, text) => {
         setSourceLat(lat)
@@ -74,7 +79,7 @@ const OverlayView = () => {
         "algorithm": "dijk"
     }
 
-    const onClickButton = () => {
+    const onClickButton = async () => {
         console.log("Here is all the shit")
         console.log(sourceLat, sourceLng, destLat, destLng, x, minMax, algorithm)
         let data = {
@@ -86,7 +91,10 @@ const OverlayView = () => {
             "percentage": x,
             "algorithm": algorithm
         }
-        postGetPath(JSON.stringify(data))
+        let path = await postGetPath(JSON.stringify(data))
+        console.log("POSTING RETUNRS", path)
+        setThisPath(path)
+        
     }
 
 
