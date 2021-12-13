@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_cors import CORS
 
-from models.get_path import GetPath
+from model.get_path import GetPath
 
 app = Flask(__name__)
 
