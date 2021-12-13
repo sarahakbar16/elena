@@ -1,6 +1,6 @@
 # from typing_extensions import Required
-from map_utility import Map
-from algorithms_utility import Algorthms
+from models.map_utility import Map
+from models.algorithms_utility import ElevationAlgorithms
 
 from flask import request
 from flask_restful import Resource, reqparse
@@ -72,7 +72,38 @@ class GetPath(Resource):
             algorithm = False
 
         
+        # create map
+        map_obj = Map()
+        map = map_obj.generate_map(source_coords)
 
-        return None
+        # call method to find shortest_path
+        algorithm = ElevationAlgorithms(map, percentage, is_max)
+        shortest_path, elevation_path = algorithm.calculate_shortest_path(source_coords, destination_coords, percentage, algorithm, is_max)
 
+
+        # send output to UI
+        geojson_chunk = {}
+        geojson_chunk["properties"] = {}
+        geojson_chunk["type"] = "Feature"
+        geojson_chunk["geometry"] = {}
+        geojson_chunk["geometry"]["type"] = "LineString"
+        geojson_chunk["geometry"]["coordinates"] = elevation_path[0]
+
+        geojson = {}
+        geojson["elevation_path"] = geojson_chunk
+
+        geojson_chunk["geometry"]["coordinates"] = shortest_path[0]
+
+        geojson["shortest_path"] = geojson_chunk
+        geojson["shortest_dist"] = shortest_path[1]  # in m 
+        geojson["shortest_gain"] = shortest_path[2]
+        # data["dropShort"] = shortestPath[3]  
+        geojson["elevation_dist"] = elevation_path[1]
+        geojson["elevation_gain"] = elevation_path[2]
+        # data["dropElenav"] = elevPath[3] 
+        if len(elevation_path[0])==0:
+            geojson["popup_flag"] = 1        
+        else:
+            geojson["popup_flag"] = 2    
+        return geojson
 
