@@ -21,6 +21,9 @@ class ElevationAlgorithms:
         return True
 
     def astar(self):
+
+        self.add_distance_from_destination(self.G, self.destination_node)
+
         if not self.verify_valid_nodes() : return
         G, shortest_distance = self.G, self.shortest_distance
         percentage, is_max = self.percentage, self.is_max
@@ -47,14 +50,14 @@ class ElevationAlgorithms:
 
         f_score = {}
 
-        f_score[source_node] = G.nodes[source_node]['dist_from_dest']
+        f_score[source_node] = G.nodes[source_node]['distance_from_destination']
 
         while len(open_set):
             current_node = min([(node,f_score[node]) for node in open_set], key=lambda t: t[1])[0]
             if current_node == destination_node:
                   if not last_node or not current_node : return
                   total_path = [current_node]
-                  while current_node in lastNode:
+                  while current_node in last_node:
                       current_node = last_node[current_node]
                       total_path.append(current_node)
                   self.optimal_path = [total_path[:], self.compute_elevation(total_path, "normal"), self.compute_elevation(total_path, "gain"), \
@@ -69,15 +72,15 @@ class ElevationAlgorithms:
 
                 approx_g_score = g_score[current_node] + self.elevation_difference(current_node, neighbor, "gain")
                 approx_g_score1 = g_score1[current_node] + self.elevation_difference(current_node, neighbor, "normal")
-                if neighbor not in open_set and tentative_g_score1<=(1+percentage)*shortest_distance:
-                    openSet.add(nei)
+                if neighbor not in open_set and approx_g_score1<=(1+percentage)*shortest_distance:
+                    open_set.add(neighbor)
                 else:
                     if approx_g_score >= g_score[neighbor] or approx_g_score1>=(1+percentage)*shortest_distance:
                         continue 
                 last_node[neighbor] = current_node
                 g_score[neighbor] = approx_g_score
                 g_score1[neighbor] = approx_g_score1
-                f_score[neighbor] = g_score[neighbor] + G.nodes[neighbor]['dist_from_dest']
+                f_score[neighbor] = g_score[neighbor] + G.nodes[neighbor]['distance_from_destination']
 
 
     def elevation_difference(self, node1, node2, min_max = "normal"):
@@ -230,6 +233,37 @@ class ElevationAlgorithms:
                     self.optimal_path = [path[:], current_distance,  elevation_distance, drop_distance]
 
         return
+
+    def distance_between_coordinates(self, source_latitude, source_longitude, destination_latitude, destination_longitude):
+    
+        earth_radius=6371008.8 #radius of the earth
+        
+        source_latitude = np.radians(source_latitude)
+        source_longitude = np.radians(source_longitude)
+        destination_latitude = np.radians(destination_latitude)
+        destination_longitude = np.radians(destination_longitude)
+
+        longitude_difference = destination_longitude - source_longitude
+        latitude_difference = destination_latitude - source_latitude
+
+        arc = np.sin(latitude_difference / 2)**2 + np.cos(source_latitude) * np.cos(destination_latitude) * np.sin(longitude_difference / 2)**2
+        curvature = 2 * np.arctan2(np.sqrt(arc), np.sqrt(1 - arc))
+
+        return earth_radius * curvature
+
+    def add_distance_from_destination(self, G, destination):
+
+        destination_node = G.nodes[destination]
+        destination_latitude = destination_node["y"]
+        destination_longitude = destination_node["x"]
+        
+        for node, data in G.nodes(data=True):
+            node_latitude = G.nodes[node]['y']
+            node_longitude = G.nodes[node]['x']
+            distance = self.distance_between_coordinates(destination_latitude, destination_longitude, node_latitude, node_longitude)            
+            data['distance_from_destination'] = distance
+            
+        return G
 
 
     def calculate_shortest_path(self, start_location, end_location, percentage, algorithm, is_max):
