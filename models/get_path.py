@@ -1,6 +1,6 @@
 # from typing_extensions import Required
-from model.map_utility import Map
-from model.algorithms_utility import ElevationAlgorithms
+from models.map_utility import Map
+from models.algorithms_utility import ElevationAlgorithms
 
 from flask import request
 from flask_restful import Resource, reqparse
