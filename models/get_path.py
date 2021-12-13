@@ -9,8 +9,6 @@ import osmnx
 
 import networkx as nx
 
-import numpy as np
-
 
 class GetPath(Resource):
 
