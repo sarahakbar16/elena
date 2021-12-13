@@ -7,6 +7,8 @@ from heapq import *
 import matplotlib.pyplot as plt
 from collections import deque, defaultdict
 
+import time
+
 class ElevationAlgorithms:
 
     def __init__(self, G, percentage = 0.0, is_max = True):
@@ -247,8 +249,10 @@ class ElevationAlgorithms:
         return None, None, None
 
 
-    def djikstra_all_paths(self):
+    def dijkstra_all_paths(self):
+    
         "chose the best path by trying path with different cost-type"
+
         if not self.verify_valid_nodes():
             return
         source_node, destination_node = self.source_node, self.destination_node
@@ -356,10 +360,25 @@ class ElevationAlgorithms:
 
         if algorithm == "astar":
             print("Astar algorithm is being used to calculate path with elevation.")
+            astar_start_time = time.time()
             self.astar()
+            astar_end_time = time.time()
+
+            print("A* time of execution: ", astar_end_time - astar_start_time)
+
+            with open("empirical_analysis/astar_time.txt", 'a+') as f:
+                f.write(str(astar_end_time - astar_start_time) + "\n")
+
         else :
             print("Dijkstra algorithm is being used to calculate path with elevation.")
-            self.djikstra_all_paths()
+            dijkstra_start_time = time.time()
+            self.dijkstra_all_paths()
+            dijkstra_end_time = time.time()
+
+            print("Dijkstra time of execution: ", dijkstra_end_time - dijkstra_start_time)
+
+            with open("empirical_analysis/dijkstra_time.txt", 'a+') as f:
+                f.write(str(dijkstra_end_time - dijkstra_start_time) + "\n")
 
         shortest_route_coordinates = [[G.nodes[node]['x'],G.nodes[node]['y']] for node in self.shortest_route]
         shortest_route_metadata = [shortest_route_coordinates, self.shortest_distance, \
