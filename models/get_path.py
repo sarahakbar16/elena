@@ -66,10 +66,10 @@ class GetPath(Resource):
         percentage = int(data["percentage"])
         algorithm = data["algorithm"]
 
-        if algorithm == "True":
-            algorithm = True
+        if is_max == "True":
+            is_max = True
         else:
-            algorithm = False
+            is_max = False
 
         
         # create map
@@ -77,8 +77,8 @@ class GetPath(Resource):
         map = map_obj.generate_map(source_coords)
 
         # call method to find shortest_path
-        algorithm = ElevationAlgorithms(map, percentage, is_max)
-        shortest_path, elevation_path = algorithm.calculate_shortest_path(source_coords, destination_coords, percentage, algorithm, is_max)
+        algo = ElevationAlgorithms(map, percentage, is_max)
+        shortest_path, elevation_path = algo.calculate_shortest_path(source_coords, destination_coords, percentage, algorithm, is_max)
 
 
         # send output to UI
