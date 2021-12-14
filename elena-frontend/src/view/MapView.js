@@ -8,6 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import Alert from '@mui/material/Alert';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
@@ -30,31 +31,28 @@ const MapView = (path) => {
             zoom: zoom,
         });
 
-
-        /* map.on('move', () => {
-            setLng(map.getCenter().lng.toFixed(4));
-            setLat(map.getCenter().lat.toFixed(4));
-            setZoom(map.getZoom().toFixed(2));
-        }); */
-
     });
 
     useEffect(() => {
         if (JSON.stringify(path.path) !== '{}') {
+
             map.on('load', () => {
                 map.addSource('elevation-route', {
                     'type': 'geojson',
                     'data': path.path.elevation_path,
                 });
-                console.log(path.path.elevation_path.geometry.coordinates[0])
 
-                const marker1 = new mapboxgl.Marker({ color: 'black' })
-                    .setLngLat(path.path.elevation_path.geometry.coordinates[0])
-                    .addTo(map);
+                if (path.path.elevation_path.geometry) {
+                    const marker1 = new mapboxgl.Marker({ color: 'black' })
+                        .setLngLat(path.path.elevation_path.geometry.coordinates[0])
+                        .addTo(map);
 
-                const marker2 = new mapboxgl.Marker({ color: 'black' })
-                    .setLngLat(path.path.elevation_path.geometry.coordinates[path.path.elevation_path.geometry.coordinates.length - 1])
-                    .addTo(map);
+                    const marker2 = new mapboxgl.Marker({ color: 'black' })
+                        .setLngLat(path.path.elevation_path.geometry.coordinates[path.path.elevation_path.geometry.coordinates.length - 1])
+                        .addTo(map);
+
+                }
+
 
                 map.addLayer({
                     'id': 'elevation-route',
@@ -104,6 +102,10 @@ const MapView = (path) => {
 
     return (
         <div className="mapView">
+            {(path.path.popup_flag === 0) &&
+                <Alert variant="filled"  severity="error">Please enter in a source and/or destination in the range of Amherst, MA. </Alert>
+
+            }
             <div ref={mapContainer} className="map-container" />
         </div>
     );
