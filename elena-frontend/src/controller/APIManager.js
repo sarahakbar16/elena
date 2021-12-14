@@ -21,5 +21,3 @@ const postGetPath = async (data) => {
 
 export default postGetPath
 
-
-
