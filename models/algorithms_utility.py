@@ -368,6 +368,9 @@ class ElevationAlgorithms:
 
             with open("empirical_analysis/astar_time.txt", 'a+') as f:
                 f.write(str(astar_end_time - astar_start_time) + "\n")
+            
+            if len(self.optimal_path[0]) == 0 :
+                self.djikstra_all_paths()
 
         else :
             print("Dijkstra algorithm is being used to calculate path with elevation.")
