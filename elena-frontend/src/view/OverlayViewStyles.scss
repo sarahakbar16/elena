@@ -1,46 +1,117 @@
 .overlayView {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  width: 400px;
+
+  background-color: rgba(35, 55, 75, 0.9);
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 12px;
+  border-radius: 4px;
+  font-family: "Roboto";
+
+  & .input {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    height: 400px;
-    width: 300px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: white;
+  }
 
-    background-color: rgba(35, 55, 75, 0.9);
-    color: #fff;
-    padding: 6px 12px;
-    font-family: monospace;
-    z-index: 1;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 12px;
-    border-radius: 4px;
+  & .MuiInputBase-root.Mui-disabled {
+    color: white;
+  }
+  & .css-aqpgxn-MuiFormLabel-root-MuiInputLabel-root {
+    color: white;
+    border-color: white;
+    padding-left: 5px;
+  }
+  & .css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+    width: 275px;
+    color: white;
+  }
 
+  & .title {
+    display: flex;
+    padding-top: 15px;
+    color: white;
+  }
+
+  & .Button {
+    color: white;
+  }
+}
+
+.stats-bar {
+  display: flex;
+  flex-direction: column;
+  height: 210px;
+  width: 400px;
+
+  background-color: rgba(35, 55, 75, 0.9);
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 12px;
+  border-radius: 4px;
+  color: white;
+  font-family: "Roboto";
+
+  & .stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    & .title{
+      display:flex; 
+      font-size: 20px; 
+      padding-top:5px; 
+    }
+
+    & .item{
+      display:flex; 
+      font-size: 17px; 
+      padding-top:2px; 
+
+    }
+  }
 }
 
 .react-mapbox-ac-menu {
-    width: auto;
-    position: absolute;
-    z-index: 9999;
-    background-color: black;
-    border: 1px solid #ccc;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    margin-top: -1.3rem;
-  }
-   
-  .react-mapbox-ac-input {
-    margin-bottom: 1.5rem;
-  }
-   
-  .react-mapbox-ac-suggestion {
-    font-size: 18px;
-    margin-bottom: .5rem;
-    cursor: pointer;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-   
-  .react-mapbox-ac-suggestion:hover {
-    background-color: #58a;
-  }
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  background-color: black;
+  border: 1px solid #ccc;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin-top: -1.3rem;
+  color: black;
+}
+
+.react-mapbox-ac-input {
+  display: flex;
+  width: 375px;
+  height: 25px;
+  margin-top: 15px;
+}
+
+.react-mapbox-ac-suggestion {
+  font-size: 18px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.react-mapbox-ac-suggestion:hover {
+  background-color: #58a;
+}
