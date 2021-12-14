@@ -7,9 +7,18 @@ from heapq import *
 import matplotlib.pyplot as plt
 from collections import deque, defaultdict
 
+import time
+
 class ElevationAlgorithms:
 
     def __init__(self, G, percentage = 0.0, is_max = True):
+        """
+        Class Initializer
+        Parameters:
+        G : Graph project
+        percentage : percentage over the shortest_distance
+        is_max : True for maximize elevation, False for minimize elevation
+        """
         self.G = G
         self.is_max = is_max
         self.percentage = percentage
@@ -18,12 +27,17 @@ class ElevationAlgorithms:
 
 
     def verify_valid_nodes(self):
+        """
+        Verify if the source node and destination node are valid or not i.e.None
+        """
         if self.source_node is None or self.destination_node is None:
             return False
         return True
 
     def astar(self):
-
+        """
+        Find the nodes in the optimal path with heuristic using A* algorithm
+        """
         self.add_distance_from_destination(self.G, self.destination_node)
 
         if not self.verify_valid_nodes() : return
@@ -72,8 +86,8 @@ class ElevationAlgorithms:
                 if neighbor in closed_set:
                     continue 
 
-                approx_g_score = g_score[current_node] + self.elevation_difference(current_node, neighbor, "gain")
-                approx_g_score1 = g_score1[current_node] + self.elevation_difference(current_node, neighbor, "normal")
+                approx_g_score = g_score[current_node] + self.node_cost(current_node, neighbor, "gain")
+                approx_g_score1 = g_score1[current_node] + self.node_cost(current_node, neighbor, "normal")
                 if neighbor not in open_set and approx_g_score1<=(1+percentage)*shortest_distance:
                     open_set.add(neighbor)
                 else:
@@ -85,51 +99,68 @@ class ElevationAlgorithms:
                 f_score[neighbor] = g_score[neighbor] + G.nodes[neighbor]['distance_from_destination']
 
 
-    def elevation_difference(self, node1, node2, min_max = "normal"):
+    def node_cost(self, node1, node2, cost_type = "normal"):
+        """
+        Cost between two nodes based on the cost_type
+        Parameters:
+        node1: 1st node
+        node2 : 2nd node
+        cost_type : cost type between the nodes
+        Return:
+        Cost chosen between node1 and node2
+        """
         G = self.G
 
         if node1 is None or node2 is None : return
         
-        if min_max == "normal":
+        if cost_type == "normal":
             try : return G.edges[node1, node2 ,0]["length"]
             except : return G.edges[node1, node2]["weight"]
         
-        elif min_max == "gain":
+        elif cost_type == "gain":
             return max(0.0, G.nodes[node2]["elevation"] - G.nodes[node1]["elevation"])
 
-        elif min_max == "final-elevation":
+        elif cost_type == "final-elevation":
             return G.nodes[node2]["elevation"] - G.nodes[node1]["elevation"]
         
-        elif min_max == "drop":
+        elif cost_type == "drop":
             return max(0.0, G.nodes[node1]["elevation"] - G.nodes[node2]["elevation"])
         
         else:
             return abs(G.nodes[node1]["elevation"] - G.nodes[node2]["elevation"])
 
     
-    def compute_elevation(self, path, min_max = "final-elevation", piece_wise = False):
-        
+    def compute_elevation(self, path, cost_type = "final-elevation", piece_wise = False):
+        """
+        Compute the cost of the route for given list of node id
+        Parameters :
+        path : node ids list
+        cost_type : cost between the two nodes
+        piece_wise : boolean variable to indicate piece_wise cost between node to be returned
+        Return :
+        total cost for the path or piecewise cost
+        """
         total_elevation = 0
         
         if piece_wise : piece_wise_elevations = []
         
         for i in range(len(path)-1):
 
-            if min_max == "final-elevation":
-                elevation_difference = self.elevation_difference(path[i], path[i+1], "final-elevation")
+            if cost_type == "final-elevation":
+                elevation_difference = self.node_cost(path[i], path[i+1], "final-elevation")
             
-            elif min_max == "gain":
-                elevation_difference = self.elevation_difference(path[i],path[i+1],"gain")
+            elif cost_type == "gain":
+                elevation_difference = self.node_cost(path[i],path[i+1],"gain")
             
-            elif min_max == "drop":
-                elevation_difference = self.elevation_difference(path[i],path[i+1],"drop")
+            elif cost_type == "drop":
+                elevation_difference = self.node_cost(path[i],path[i+1],"drop")
             
-            elif min_max == "normal":
-                elevation_difference = self.elevation_difference(path[i],path[i+1],"normal")
+            elif cost_type == "normal":
+                elevation_difference = self.node_cost(path[i],path[i+1],"normal")
             
             total_elevation = total_elevation + elevation_difference
             
-            if piece_wise : piece_wise_elevations.append(elevation_difference)
+            if piece_wise : piece_wise_elevations.append(node_cost)
         
         if piece_wise:
             return total_elevation, piece_wise_elevations
@@ -139,7 +170,7 @@ class ElevationAlgorithms:
 
 
     def get_path(self, parent, destination):
-
+        "Function to get path between parent and destination"
         route = [destination]
         
         current = parent[destination]
@@ -152,7 +183,14 @@ class ElevationAlgorithms:
 
 
     def dijkstra(self, edge_value):
-
+        """
+        Find the path between source node and destination node which maximizes/minimize elevation
+        Params:
+        edge_value : list of two items
+        Return:
+        priority of target node in heap,distance covered to reach target node and a dictionary mapping parent
+        and children
+        """
         if not self.verify_valid_nodes():
             return
         
@@ -182,22 +220,22 @@ class ElevationAlgorithms:
                     if neighbors in visited_nodes: continue
                     
                     previous = minimum_distances.get(neighbors, None)
-                    elevation_diff = self.elevation_difference(current_node, neighbors, "normal")
+                    elevation_diff = self.node_cost(current_node, neighbors, "normal")
 
                     if is_max :
                         if edge_value[0] == 1:
-                            next_elevation_diff = elevation_diff - self.elevation_difference(current_node, neighbors, "final-elevation")
+                            next_elevation_diff = elevation_diff - self.node_cost(current_node, neighbors, "final-elevation")
                         elif edge_value[0] == 2:
-                            next_elevation_diff = (elevation_diff - self.elevation_difference(current_node, neighbors, "final-elevation"))*elevation_diff
+                            next_elevation_diff = (elevation_diff - self.node_cost(current_node, neighbors, "final-elevation"))*elevation_diff
                         elif edge_value[0] == 3:
-                            next_elevation_diff = elevation_diff + self.elevation_difference(current_node, neighbors, "drop")
+                            next_elevation_diff = elevation_diff + self.node_cost(current_node, neighbors, "drop")
                     else:
                         if edge_value[0] == 1:
-                            next_elevation_diff = elevation_diff + self.elevation_difference(current_node, neighbors, "final-elevation")
+                            next_elevation_diff = elevation_diff + self.node_cost(current_node, neighbors, "final-elevation")
                         elif edge_value[0] == 2:
-                            next_elevation_diff = (elevation_diff + self.elevation_difference(current_node, neighbors, "final-elevation"))*elevation_diff
+                            next_elevation_diff = (elevation_diff + self.node_cost(current_node, neighbors, "final-elevation"))*elevation_diff
                         else:
-                            next_elevation_diff = elevation_diff + self.elevation_difference(current_node, neighbors, "gain")
+                            next_elevation_diff = elevation_diff + self.node_cost(current_node, neighbors, "gain")
                     
                     if edge_value[1]:
                          next_elevation_diff = next_elevation_diff + current_priority
@@ -211,12 +249,13 @@ class ElevationAlgorithms:
         return None, None, None
 
 
-    def djikstra_all_paths(self):
+    def dijkstra_all_paths(self):
+    
+        "chose the best path by trying path with different cost-type"
+
         if not self.verify_valid_nodes():
             return
         source_node, destination_node = self.source_node, self.destination_node
-
-
         for edge_value in [[1, True], [2, True], [3, True], [1, False], [2, False], [3, False]]:
             _, current_distance, parent_dict = self.dijkstra(edge_value)
 
@@ -226,7 +265,7 @@ class ElevationAlgorithms:
 
             elevation_distance = self.compute_elevation(path, "gain")
             drop_distance = self.compute_elevation(path, "drop")
-            
+
             if self.is_max :
                 if (elevation_distance > self.optimal_path[2]) or (elevation_distance == self.optimal_path[2] and current_distance < self.optimal_path[1]):
                     self.optimal_path = [path[:], current_distance, elevation_distance, drop_distance]
@@ -237,7 +276,16 @@ class ElevationAlgorithms:
         return
 
     def distance_between_coordinates(self, source_latitude, source_longitude, destination_latitude, destination_longitude):
-    
+        """
+        Return the distance between source and destination
+        Parameters:
+        source_latitude : latitude of source node
+        source_longitude : longitude of source node
+        destination_latitude : latitude of destination node
+        destination_longitude : longitude of destination node
+        Return:
+        distance between source and destination node
+        """
         earth_radius=6371008.8 #radius of the earth
         
         source_latitude = np.radians(source_latitude)
@@ -254,6 +302,14 @@ class ElevationAlgorithms:
         return earth_radius * curvature
 
     def add_distance_from_destination(self, G, destination):
+        """
+        Add distance from destination to a node
+        Parameters:
+        G : graph of Amherst
+        destination : destination node
+        Return:
+        Updated graph G
+        """
 
         destination_node = G.nodes[destination]
         destination_latitude = destination_node["y"]
@@ -269,6 +325,20 @@ class ElevationAlgorithms:
 
 
     def calculate_shortest_path(self, start_location, end_location, percentage, algorithm, is_max):
+        """
+        Function to calculate the shortest path between start location and end location
+        Parameters:
+        start_location : metadata for start_location i.e.tuple(latitude, longitude)
+        end_location : metadata for end_location i.e. tuple(latitude, longitude)
+        percentage : percent by which we can go above minimum distance
+        algorithm : algorithm used for finding the optimal path
+        is_max : True for maximize elevation, False for minimize elevation
+        Return:
+        two lists containing best route, distance between the start node and end node in best route,
+        positive change and negative change in elevation
+        1st list is for shortest path, 2nd for path with elevation
+        """
+
         G = self.G
         self.percentage = percentage/100.0
         self.is_max = is_max
@@ -290,10 +360,25 @@ class ElevationAlgorithms:
 
         if algorithm == "astar":
             print("Astar algorithm is being used to calculate path with elevation.")
+            astar_start_time = time.time()
             self.astar()
+            astar_end_time = time.time()
+
+            print("A* time of execution: ", astar_end_time - astar_start_time)
+
+            with open("empirical_analysis/astar_time.txt", 'a+') as f:
+                f.write(str(astar_end_time - astar_start_time) + "\n")
+
         else :
             print("Dijkstra algorithm is being used to calculate path with elevation.")
-            self.djikstra_all_paths()
+            dijkstra_start_time = time.time()
+            self.dijkstra_all_paths()
+            dijkstra_end_time = time.time()
+
+            print("Dijkstra time of execution: ", dijkstra_end_time - dijkstra_start_time)
+
+            with open("empirical_analysis/dijkstra_time.txt", 'a+') as f:
+                f.write(str(dijkstra_end_time - dijkstra_start_time) + "\n")
 
         shortest_route_coordinates = [[G.nodes[node]['x'],G.nodes[node]['y']] for node in self.shortest_route]
         shortest_route_metadata = [shortest_route_coordinates, self.shortest_distance, \
