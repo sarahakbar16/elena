@@ -119,4 +119,3 @@ class GetPath(Resource):
         else:
             geojson["popup_flag"] = 2    
         return geojson
-
