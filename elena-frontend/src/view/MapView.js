@@ -15,6 +15,11 @@ mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worke
 const tkn = 'pk.eyJ1Ijoic2FrYmFyIiwiYSI6ImNrd3BpZ3R5dDBkNmwydnM2MGczZWczejMifQ.ogaGLHvGYHqJ8Y8ThXf8yQ';
 mapboxgl.accessToken = tkn
 
+/**
+ * Creates component for the Map portion of the application 
+ * @param {} path 
+ * @returns 
+ */
 const MapView = (path) => {
 
     const mapContainer = useRef(null);
@@ -33,6 +38,9 @@ const MapView = (path) => {
 
     });
 
+    /**
+     * This useEffect displays the path and relevant information once it is generated. 
+     */
     useEffect(() => {
         if (JSON.stringify(path.path) !== '{}') {
 

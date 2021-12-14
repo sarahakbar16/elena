@@ -17,6 +17,11 @@ import { blue } from '@mui/material/colors';
 const tkn = 'pk.eyJ1Ijoic2FrYmFyIiwiYSI6ImNrd3BpZ3R5dDBkNmwydnM2MGczZWczejMifQ.ogaGLHvGYHqJ8Y8ThXf8yQ';
 
 
+/**
+ * Creates the component for the overlay. 
+ * @param {*} param0 
+ * @returns 
+ */
 const OverlayView = ({ setMyPath }) => {
 
     const [validData, setValidData] = useState(false)
@@ -75,8 +80,8 @@ const OverlayView = ({ setMyPath }) => {
     }, [error])
 
 
+
     const onClickButton = async () => {
-        console.log(sourceLat, sourceLng, destLat, destLng, x, minMax, algorithm)
         let data = {
             "source_coords_lat": sourceLat,
             "source_coords_long": sourceLng,
@@ -86,7 +91,7 @@ const OverlayView = ({ setMyPath }) => {
             "percentage": x,
             "algorithm": algorithm
         }
-        let path = await postGetPath(JSON.stringify(data))
+        let path = await postGetPath(JSON.stringify(data)) //Sends the data to the controller 
 
         setPathStats(path)
         setThisPath(path)
