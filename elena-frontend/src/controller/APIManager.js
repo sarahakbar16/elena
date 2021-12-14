@@ -15,6 +15,7 @@ const postGetPath = async (data) => {
         })
         .catch((error) => {
             console.error('Error:', error);
+            return error.message
         });
     return resp
 }

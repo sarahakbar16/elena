@@ -4,14 +4,12 @@ import React, { useState, useRef, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import postGetPath from "../controller/APIManager"
-import ButtonGroup from '@mui/material/ButtonGroup'
 import MapboxAutocomplete from 'react-mapbox-autocomplete';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
+
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import { blue } from '@mui/material/colors';
 
 
@@ -34,6 +32,8 @@ const OverlayView = ({ setMyPath }) => {
 
     const [minMax, setMinMax] = useState("")
     const [algorithm, setAlgorithm] = useState("")
+
+    const [error, setError] = useState()
 
     const handleAlgorithmChange = (event) => {
         setAlgorithm(event.target.value);
@@ -70,6 +70,10 @@ const OverlayView = ({ setMyPath }) => {
         }
     }, [sourceLat, sourceLng, destLat, destLng, x, minMax, algorithm])
 
+    useEffect(() => {
+        console.log("An error was found!")
+    }, [error])
+
 
     const onClickButton = async () => {
         console.log(sourceLat, sourceLng, destLat, destLng, x, minMax, algorithm)
@@ -83,6 +87,7 @@ const OverlayView = ({ setMyPath }) => {
             "algorithm": algorithm
         }
         let path = await postGetPath(JSON.stringify(data))
+
         setPathStats(path)
         setThisPath(path)
 
@@ -172,13 +177,14 @@ const OverlayView = ({ setMyPath }) => {
 
     </div>
 
-        {pathStats &&
+        {pathStats && pathStats.shortest_dist && pathStats.shortest_gain && pathStats.elevation_dist && pathStats.elevation_gain &&
             <div className="stats-bar">
                 <div className="stats">
 
                     <div className="title">
                         Total Distance for Shortest Route (Black):
                     </div>
+
                     <div className="item">
                         {pathStats.shortest_dist.toFixed(2)}m
                     </div>
