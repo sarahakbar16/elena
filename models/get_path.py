@@ -80,27 +80,40 @@ class GetPath(Resource):
         algo = ElevationAlgorithms(map, percentage, is_max)
         shortest_path, elevation_path = algo.calculate_shortest_path(source_coords, destination_coords, percentage, algorithm, is_max)
 
+        if shortest_path is None and elevation_path is None:
+            geojson = {"elevation_path": [], "shortest_path": []}
+            geojson["shortest_dist"] = 0
+            geojson["shortest_gain"] = 0
+            geojson["elevation_dist"] = 0
+            geojson["elevation_gain"] = 0
+            geojson["popup_flag"] = 0
+            return geojson
 
         # send output to UI
-        geojson_chunk = {}
-        geojson_chunk["properties"] = {}
-        geojson_chunk["type"] = "Feature"
-        geojson_chunk["geometry"] = {}
-        geojson_chunk["geometry"]["type"] = "LineString"
-        geojson_chunk["geometry"]["coordinates"] = elevation_path[0]
+        geojson_chunk_ele = {}
+        geojson_chunk_ele["properties"] = {}
+        geojson_chunk_ele["type"] = "Feature"
+        geojson_chunk_ele["geometry"] = {}
+        geojson_chunk_ele["geometry"]["type"] = "LineString"
+        geojson_chunk_ele["geometry"]["coordinates"] = elevation_path[0]
 
         geojson = {}
-        geojson["elevation_path"] = geojson_chunk
+        geojson["elevation_path"] = geojson_chunk_ele
 
-        geojson_chunk["geometry"]["coordinates"] = shortest_path[0]
 
-        geojson["shortest_path"] = geojson_chunk
-        geojson["shortest_dist"] = shortest_path[1]  # in m 
+        geojson_chunk_s = {}
+        geojson_chunk_s["properties"] = {}
+        geojson_chunk_s["type"] = "Feature"
+        geojson_chunk_s["geometry"] = {}
+        geojson_chunk_s["geometry"]["type"] = "LineString"
+        geojson_chunk_s["geometry"]["coordinates"] = shortest_path[0]
+
+        geojson["shortest_path"] = geojson_chunk_s
+        geojson["shortest_dist"] = shortest_path[1]
         geojson["shortest_gain"] = shortest_path[2]
-        # data["dropShort"] = shortestPath[3]  
         geojson["elevation_dist"] = elevation_path[1]
         geojson["elevation_gain"] = elevation_path[2]
-        # data["dropElenav"] = elevPath[3] 
+
         if len(elevation_path[0])==0:
             geojson["popup_flag"] = 1        
         else:
